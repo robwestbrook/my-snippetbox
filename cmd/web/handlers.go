@@ -56,7 +56,10 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 	
 }
 
+//
 // Create Snippet Handler
+// A method of the application type
+//
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	app.infoLog.Println("In createSnippet handler")
 	// Create must be a POST request
@@ -67,5 +70,20 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, http.StatusMethodNotAllowed)
 		return
 	}
-	w.Write([]byte("Create a new snippet..."))
+	
+	// Dummy data
+	title := "Time Test"
+	content := "This is a test of the expires date and time"
+	expires := "30"
+
+	// Pass the data to the SnippetModel Insert() method
+	// Receive the ID of the created snippet
+	id, err := app.snippets.Insert(title, content, expires)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	// Redirect to new snippet page
+	http.Redirect(w, r, fmt.Sprintf("/snippet?id=%d", id), http.StatusSeeOther)
 }
